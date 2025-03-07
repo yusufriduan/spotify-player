@@ -3,6 +3,13 @@ import axios from "axios";
 import "../App.css";
 import spotifyButton from "./button.tsx";
 
+interface PlaybackState {
+  item: {
+    name: string;
+    artists: { name: string }[];
+  };
+}
+
 function player() {
   const handlePlay = async () => {
     try {
@@ -20,7 +27,7 @@ function player() {
     }
   };
 
-  const [playbackState, setPlaybackState] = useState(null);
+  const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
   useEffect(() => {
     axios
       .get("http://localhost:5000/currentPlaying")
@@ -33,8 +40,8 @@ function player() {
       {playbackState ? (
         <>
           <div className="TrackInfo">
-            <h2>Now playing: {playbackState.item.name}</h2>
-            <h3>{playbackState.item.artists[0].name}</h3>
+            <h2>{playbackState?.item?.name}</h2>
+            <h3>{playbackState?.item?.artists[0]?.name}</h3>
           </div>
           <div className="playerControls">
             <button onClick={handlePlay}>Play</button>

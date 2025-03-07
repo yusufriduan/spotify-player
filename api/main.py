@@ -3,14 +3,18 @@ import spotipy
 import time
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
-from flask import Flask, request, redirect, session, url_for, send_from_directory, jsonify
+from flask import Flask, request, redirect, session, send_from_directory, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder='.../')
-CORS(app, supports_credentials=True)
+CORS(app, origins='http://localhost:5173', supports_credentials=True)
 
 app.secret_key = 'super secret key'
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+
+client_id = os.getenv('SPOTIPY_CLIENT_ID')
+client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
+redirect_uri = os.getenv('SPOTIPY_REDIRECT_URI')
 
 load_dotenv()
 
@@ -33,9 +37,12 @@ def redirectPage():
     sp_oauth = create_spotify_oauth()
     session.clear()
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
+    token_info = sp_oauth.get_access_token(code, as_dict=False)
     session[os.getenv('TOKEN_INFO')] = token_info
-    return redirect(url_for('index'))
+
+    # Redirect to React application with token info
+    react_redirect_url = f"http://localhost:5173/callback?access_token={token_info['access_token']}"
+    return redirect(react_redirect_url)
 
 def get_token():
     token_info = session.get(os.getenv('TOKEN_INFO'), None)
@@ -52,15 +59,21 @@ def get_token():
 
 @app.route('/currentPlaying')
 def currentPlaying():
-    try:
-        sp = spotipy.Spotify(auth=get_token()["access_token"])
-        playback_info = sp.current_playback()
-        return jsonify(playback_info)
-    except:
-        print("Error: User is not logged in")
+    token = get_token()
+    sp = spotipy.Spotify(auth=token)
+    current_playing = sp.current_playback()
+    return jsonify(current_playing)
+    
 
 def create_spotify_oauth():
-    return SpotifyOAuth(client_id=os.getenv('CLIENT_ID'),client_secret=os.getenv('CLIENT_SECRET'),redirect_uri=os.getenv('REDIRECT_URI'),scope='user-read-playback-state user-modify-playback-state')
+    cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
+    auth_manager = spotipy.oauth2.SpotifyOAuth(client_id=client_id,
+                                              client_secret=client_secret,
+                                              redirect_uri=redirect_uri,
+                                              cache_handler=cache_handler,
+                                              show_dialog=True,
+                                              scope='user-read-playback-state user-read-currently-playing user-modify-playback-state')
+    return auth_manager
 
 if __name__ == '__main__':
     app.run(debug=True)
