@@ -4,7 +4,7 @@ import LogoutButton from "./LogoutButton";
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const userName = localStorage.getItem("userName") || "Guest";
+  const userName = sessionStorage.getItem("userName") || "Guest";
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const access_token = localStorage.getItem("access_token");
+    const access_token = sessionStorage.getItem("access_token");
     if (access_token) {
       setIsLoggedIn(true);
     } else {

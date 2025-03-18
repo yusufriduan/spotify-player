@@ -9,7 +9,7 @@ function logOutButton() {
         });
   
         if (response.ok) {
-          localStorage.clear();
+          sessionStorage.clear();
           window.location.href = "/";
         }
       } catch (error) {

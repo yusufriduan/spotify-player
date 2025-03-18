@@ -35,15 +35,24 @@ def redirectPage():
     sp_oauth = create_spotify_oauth()
     session.clear()
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
+    try:
+        token_info = sp_oauth.get_access_token(code, as_dict=True)
+    except Exception as e:
+        print(f"Error getting access token: {e}")
+        return jsonify({"error": "Failed to retrieve access token"}), 500
 
     if isinstance(token_info, str):
-        token_info = json.loads(token_info)
+        try:
+            token_info = json.loads(token_info)
+        except json.JSONDecodeError as e:
+            print(f"Error decoding token info: {e}")
+            return jsonify({"error": "Failed to decode access token"}), 500
 
     if not token_info or 'access_token' not in token_info:
         return jsonify({"error": "Failed to retrieve access token"}), 400
 
-    session['token_info'] = token_info
+    session['token_info'] = json.dumps(token_info)
+    print("Token info stored in session:", session['token_info'])
 
     # Get user details
     sp = spotipy.Spotify(auth=token_info['access_token'])
@@ -68,7 +77,9 @@ def redirectPage():
 def get_token():
     token_info = session.get('token_info')
     if not token_info:
+        print("Token info not found in session")
         raise Exception("No token info")
+    token_info = json.loads(token_info)
     print("Token Info Retrieved:", token_info)  # Debugging statement
     now = int(time.time())
 
@@ -80,29 +91,41 @@ def get_token():
     if is_expired:
         sp_oauth = create_spotify_oauth()
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-        session['token_info'] = token_info
+        session['token_info'] = json.dumps(token_info)
     return token_info['access_token']
 
 @app.route('/currentPlaying')
 def currentPlaying():
-    token = get_token()
-    sp = spotipy.Spotify(auth=token)
-    current_playing = sp.current_playback()
-    return jsonify(current_playing)
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        sp = spotipy.Spotify(auth=token)
+        current_playing = sp.current_playback()
+        return jsonify(current_playing)
+    except Exception as e:
+        print(f"Error in currentPlaying: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/play', methods=['GET'])
 def play():
-    token = get_token()
-    sp = spotipy.Spotify(auth=token)
-    sp.start_playback()
-    return jsonify({"status": "success"}), 200
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        sp = spotipy.Spotify(auth=token)
+        sp.start_playback()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print(f"Error in play: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/pause', methods=['GET'])
 def pause():
-    token = get_token()
-    sp = spotipy.Spotify(auth=token)
-    sp.pause_playback()
-    return jsonify({"status": "success"}), 200
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        sp = spotipy.Spotify(auth=token)
+        sp.pause_playback()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print(f"Error in pause: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/logout', methods=['GET'])
 def logout():

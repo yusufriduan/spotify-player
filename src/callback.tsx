@@ -13,11 +13,11 @@ const Callback = () => {
     const userName = params.get("user_name");
 
     if (access_token && refresh_token && expires_in && userId && userName) {
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("refresh_token", refresh_token);
-      localStorage.setItem("expires_in", expires_in);
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("userName", userName);
+      sessionStorage.setItem("access_token", access_token);
+      sessionStorage.setItem("refresh_token", refresh_token);
+      sessionStorage.setItem("expires_in", expires_in);
+      sessionStorage.setItem("userId", userId);
+      sessionStorage.setItem("userName", userName);
       navigate("/");
     } else {
         navigate("/");

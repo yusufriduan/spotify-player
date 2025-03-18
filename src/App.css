@@ -138,6 +138,7 @@ header {
 .player {
   position: absolute;
   display: flex;
+  flex-direction: column;
   z-index: 20;
   top: 75%;
   left: 30.5%;
@@ -149,4 +150,60 @@ header {
   border-radius: 1em;
   border: black 5px solid;
   box-shadow: 0px 3px 5px rgba(136, 99, 57, 0.637);
+}
+
+.playerControls {
+  display: flex;
+}
+
+.player button {
+  border-radius: 1em;
+  padding: 0.5em;
+  background-color: black;
+  color: white;
+}
+
+.player button:hover {
+  background-color: #1DB954;
+  border-color: #1DB954;
+  cursor: pointer;
+}
+
+.playButton,
+.pauseButton {
+  border-radius: 100%;
+  width: 50px;
+  height: 50px;
+  padding: 0.5em;
+  font-size: x-large;
+}
+
+.playButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 0.25em;
+}
+
+.pauseButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 0.25em;
+}
+
+.TrackInfo h2,
+.TrackInfo h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: 'Genty Sans Regular', sans-serif;
+}
+
+.TrackInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em
 }
