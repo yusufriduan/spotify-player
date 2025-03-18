@@ -104,10 +104,7 @@ function Player() {
             <h3>{playbackState?.item?.artists[0]?.name}</h3>
           </div>
           <div className="progressBar">
-            <div
-              className="progress"
-              style={{ width: `${getProgressPercentage()}%` }}
-            ></div>
+            <div className="progress"style={{ width: `${getProgressPercentage()}%` }}></div>
           </div>
           <div className="playerControls">
             <button onClick={handlePlay} className="playButton">⏵︎</button>
@@ -116,7 +113,7 @@ function Player() {
         </>
       ) : (
         <div style={{ textAlign: "center", alignSelf: "center" }}>
-          <h3>You're not logged in</h3>
+          <h3 className="LoggedOut">You're not logged in</h3>
           {spotifyButton()}
         </div>
       )}
