@@ -1,7 +1,11 @@
 import "../App.css";
 import React, { useState, useEffect } from "react";
+import LogoutButton from "./LogoutButton";
 
 const Header: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const userName = localStorage.getItem("userName") || "Guest";
+
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
@@ -14,6 +18,7 @@ const Header: React.FC = () => {
       return "Good night";
     }
   };
+
   const [greeting, setGreeting] = useState(getGreeting());
 
   useEffect(() => {
@@ -24,12 +29,22 @@ const Header: React.FC = () => {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
   return (
     <header>
       <div className="userinfo">
-        <h1>Hello,</h1>
+        <h1>Hello, {userName}</h1>
+        <h2>{greeting}!</h2>
       </div>
-      <h2>{greeting}!</h2>
+      {isLoggedIn && <LogoutButton />}
     </header>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "../App.css";
-import spotifyButton from "./button.tsx";
+import spotifyButton from "./LoginButton.tsx";
 
 interface PlaybackState {
   item: {
@@ -11,9 +11,32 @@ interface PlaybackState {
 }
 
 function player() {
+  const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      setIsLoggedIn(true);
+      axios
+      .get("http://localhost:5000/currentPlaying", {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      })
+      .then((response) => setPlaybackState(response.data))
+      .catch((error) => console.error("Error fetching playback state", error));
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
   const handlePlay = async () => {
     try {
-      await axios.get("http://localhost:5000/play");
+      await axios.get("http://localhost:5000/play", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
     } catch (error) {
       console.error("Error playing the song", error);
     }
@@ -21,31 +44,27 @@ function player() {
 
   const handlePause = async () => {
     try {
-      await axios.get("http://localhost:5000/pause");
+      await axios.get("http://localhost:5000/pause", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
     } catch (error) {
       console.error("Error pausing the song", error);
     }
   };
 
-  const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/currentPlaying")
-      .then((response) => setPlaybackState(response.data))
-      .catch((error) => console.error("Error fetching playback state", error));
-  }, []);
-
   return (
     <div className="player">
-      {playbackState ? (
+      {isLoggedIn ? (
         <>
           <div className="TrackInfo">
             <h2>{playbackState?.item?.name}</h2>
             <h3>{playbackState?.item?.artists[0]?.name}</h3>
           </div>
           <div className="playerControls">
-            <button onClick={handlePlay}>Play</button>
-            <button onClick={handlePause}>Pause</button>
+            <button onClick={handlePlay}>▶</button>
+            <button onClick={handlePause}>⏸</button>
           </div>
         </>
       ) : (
