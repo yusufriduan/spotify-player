@@ -23,11 +23,6 @@ function Player() {
     if (access_token) {
       setIsLoggedIn(true);
       fetchCurrentPlaying(access_token);
-      const interval = setInterval(() => {
-        fetchCurrentPlaying(access_token);
-      }, 1000);
-
-      return () => clearInterval(interval);
     } else {
       setIsLoggedIn(false);
     }
@@ -126,7 +121,7 @@ function Player() {
       {isLoggedIn ? (
         <>
           <div className="TrackInfo">
-            <h2>{playbackState?.item?.name}</h2>
+            <h2 style={{ textAlign: "center"}}>{playbackState?.item?.name}</h2>
             <h3>{playbackState?.item?.artists[0]?.name}</h3>
           </div>
           <div className="progressBar">
