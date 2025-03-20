@@ -4,6 +4,7 @@ import Clock from "./components/clock.tsx";
 import Date from "./components/date.tsx";
 import Header from "./components/header.tsx";
 import Player from "./components/player.tsx";
+import Footer from "./components/footer.tsx";
 import backgroundImage from "./assets/1531.png";
 
 const App: React.FC = () => {
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <img src={backgroundImage} alt="Background" className="backgroundImg" />
         <Player />
       </main>
+      <Footer />
     </div>
   );
 };

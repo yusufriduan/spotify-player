@@ -141,7 +141,7 @@ header {
   display: flex;
   flex-direction: column;
   z-index: 20;
-  top: 75%;
+  top: 70%;
   left: 30.5%;
   width: 35%;
   padding: 1em;
@@ -227,4 +227,21 @@ header {
 
 .LoggedOut {
   font-family: 'Genty Sans Regular', sans-serif;
+}
+
+.footer {
+  position: absolute;
+  z-index: 500;
+  top: 95%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.footer p {
+  font-family: 'Genty Sans Regular', sans-serif;
+  text-align: center;
+  color: #1e1e1e;
+  font-size: 1em;
 }
