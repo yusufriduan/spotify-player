@@ -88,6 +88,32 @@ function Player() {
     }
   };
 
+  const handleForward = async () => {
+    try {
+      await axios.get("http://localhost:5000/forward", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+      fetchCurrentPlaying(sessionStorage.getItem("access_token")!);
+    } catch (error) {
+      console.error("Error skipping to the next track", error);
+    }
+  };
+
+  const handleBackward = async () => {
+    try {
+      await axios.get("http://localhost:5000/backward", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+      });
+      fetchCurrentPlaying(sessionStorage.getItem("access_token")!);
+    } catch (error) {
+      console.error("Error skipping to the previous track", error);
+    }
+  };
+
   const getProgressPercentage = () => {
     if (playbackState) {
       return (progress / playbackState.item.duration_ms) * 100;
@@ -107,8 +133,10 @@ function Player() {
             <div className="progress"style={{ width: `${getProgressPercentage()}%` }}></div>
           </div>
           <div className="playerControls">
+            <button onClick={handleBackward} className="backwardButton">⏮︎</button>
             <button onClick={handlePlay} className="playButton">⏵︎</button>
             <button onClick={handlePause} className="pauseButton">⏸︎</button>
+            <button onClick={handleForward} className="forwardButton">⏭︎</button>
           </div>
         </>
       ) : (

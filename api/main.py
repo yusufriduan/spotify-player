@@ -126,6 +126,28 @@ def pause():
     except Exception as e:
         print(f"Error in pause: {e}")
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/forward', methods=['GET'])
+def next_track():
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        sp = spotipy.Spotify(auth=token)
+        sp.next_track()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print(f"Error in next_track: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/backward', methods=['GET'])
+def previous_track():
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        sp = spotipy.Spotify(auth=token)
+        sp.previous_track()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print(f"Error in previous_track: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -145,10 +167,26 @@ def create_spotify_oauth():
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,DELETE,PUT')
+    if 'Access-Control-Allow-Origin' not in response.headers:
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+    if 'Access-Control-Allow-Credentials' not in response.headers:
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+    if 'Access-Control-Allow-Headers' not in response.headers:
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    if 'Access-Control-Allow-Methods' not in response.headers:
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,DELETE,PUT')
+    return response
+
+@app.route('/forward', methods=['OPTIONS'])
+def handle_forward_options():
+    response = jsonify({"status": "success"})
+    response.status_code = 200
+    return response
+
+@app.route('/backward', methods=['OPTIONS'])
+def handle_backward_options():
+    response = jsonify({"status": "success"})
+    response.status_code = 200
     return response
 
 if __name__ == '__main__':

@@ -171,7 +171,9 @@ header {
 }
 
 .playButton,
-.pauseButton {
+.pauseButton,
+.forwardButton,
+.backwardButton {
   border-radius: 100%;
   width: 50px;
   height: 50px;
@@ -179,18 +181,20 @@ header {
   font-size: x-large;
 }
 
-.playButton {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-right: 0.25em;
-}
-
+.playButton,
 .pauseButton {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-right: 0.25em;
   margin-left: 0.25em;
+}
+
+.forwardButton,
+.backwardButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .TrackInfo h2,
